@@ -63,15 +63,25 @@ jobs:
             CODE_SIGN_IDENTITY="-" \
             CODE_SIGN_STYLE=Manual \
             DEVELOPMENT_TEAM="" \
-            PROVISIONING_PROFILE_SPECIFIER=""
+            PROVISIONING_PROFILE_SPECIFIER="" \
+            CODE_SIGN_INJECT_BASE_ENTITLEMENTS=NO
 
           APP="build/dd/Build/Products/Release/Decibel.app"
           test -d "$APP" || { echo "::error::Decibel.app not found at $APP"; exit 1; }
           mkdir -p build && cp -R "$APP" build/Decibel.app
 
-          # Confirm the ad-hoc signature and that entitlements survived
+          # Confirm the ad-hoc signature and inspect the shipped entitlements
           codesign -dv --verbose=2 build/Decibel.app
           codesign -d --entitlements :- build/Decibel.app
+
+          # get-task-allow lets a debugger attach to the shipped app and also
+          # makes the build unnotarizable. xcodebuild injects it unless told
+          # not to, so fail loudly if it ever comes back.
+          if codesign -d --entitlements :- build/Decibel.app 2>/dev/null \
+               | grep -q "get-task-allow"; then
+            echo "::error::get-task-allow present in a release build"; exit 1
+          fi
+          echo "entitlement check: no get-task-allow"
 
       - name: Create DMG
         run: |

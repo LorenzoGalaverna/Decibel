@@ -8,5 +8,14 @@
 	<true/>
 	<key>com.apple.security.network.client</key>
 	<true/>
+	<!-- Release builds are ad-hoc signed rather than signed with a Developer
+	     ID. The hardened runtime turns on library validation, which requires
+	     the app and its embedded frameworks to share a Team ID; ad-hoc
+	     signatures have none, so Sparkle.framework fails to load and macOS
+	     kills the app at launch. Apple permits this entitlement in notarized
+	     builds, so it does not block moving to a Developer ID later - at which
+	     point this key can be removed, because both will share a Team ID. -->
+	<key>com.apple.security.cs.disable-library-validation</key>
+	<true/>
 </dict>
 </plist>
