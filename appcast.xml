@@ -35,21 +35,5 @@
             <sparkle:minimumSystemVersion>15.4</sparkle:minimumSystemVersion>
             <enclosure url="https://github.com/LorenzoGalaverna/Decibel/releases/download/v1.0.2/Decibel.dmg" length="5417185" type="application/octet-stream" sparkle:edSignature="+cGJjeNXH35vCg5sREQiQER6tAnNCUXxgRP/wvD0OVEkwqMUt5c4nZd0svtJDfxP5om3YCFVjeNi0CXhKlBtBQ=="/>
         </item>
-        <item>
-            <title>1.0.1</title>
-            <pubDate>Mon, 26 Oct 2026 21:36:34 +0000</pubDate>
-            <sparkle:version>5</sparkle:version>
-            <sparkle:shortVersionString>1.0.1</sparkle:shortVersionString>
-            <sparkle:minimumSystemVersion>15.4</sparkle:minimumSystemVersion>
-            <enclosure url="https://github.com/LorenzoGalaverna/Decibel/releases/download/v1.0.1/Decibel.dmg" length="5417208" type="application/octet-stream" sparkle:edSignature="CtMdzd7fMj8ClYn9+wYrJJDrUIBM1CIeHxX+odQ+avijrsqZ2GaxZ1A81GRuZ8cSGKrlUMp5Oecq9lBcEuhoCw=="/>
-        </item>
-        <item>
-            <title>1.0.0</title>
-            <pubDate>Mon, 26 Oct 2026 20:54:11 +0000</pubDate>
-            <sparkle:version>3</sparkle:version>
-            <sparkle:shortVersionString>1.0.0</sparkle:shortVersionString>
-            <sparkle:minimumSystemVersion>15.4</sparkle:minimumSystemVersion>
-            <enclosure url="https://github.com/LorenzoGalaverna/Decibel/releases/download/v1.0.0/Decibel.dmg" length="5241039" type="application/octet-stream" sparkle:edSignature="BnQMoebf05bu386sx4N9Q9dbbM+aNo6XkHH2sVOwAuoUgrrOKaQyLp76fJbfuKFaI208J37WFvXUYe5fakkzBQ=="/>
-        </item>
     </channel>
 </rss>
