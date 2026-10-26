@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0">
+    <channel>
+        <title>Decibel Updates</title>
+        <link>https://github.com/LorenzoGalaverna/Decibel</link>
+        <description>Most recent updates to Decibel</description>
+        <language>en</language>
+        <!--
+    No releases published yet.
+
+    IMPORTANT before the first release: generate your own Sparkle EdDSA key pair
+    (`generate_keys` from the Sparkle distribution) and put the resulting public
+    key in Decibel/Info.plist under SUPublicEDKey. The key currently in Info.plist
+    belongs to the upstream FineTune project, so you cannot sign updates with it.
+
+    Template for new releases (the release workflow appends these automatically):
+    <item>
+      <title>Version X.X.X</title>
+      <sparkle:version>BUILD_NUMBER</sparkle:version>
+      <sparkle:shortVersionString>X.X.X</sparkle:shortVersionString>
+      <pubDate>Day, DD Mon YYYY HH:MM:SS +0000</pubDate>
+      <enclosure
+        url="https://github.com/LorenzoGalaverna/Decibel/releases/download/vX.X.X/Decibel-X.X.X.dmg"
+        sparkle:edSignature="ED_SIGNATURE_HERE"
+        length="FILE_SIZE_BYTES"
+        type="application/octet-stream"/>
+      <sparkle:minimumSystemVersion>15.0</sparkle:minimumSystemVersion>
+    </item>
+    -->
+    </channel>
+</rss>

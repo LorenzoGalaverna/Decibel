@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>LSUIElement</key>
+	<true/>
+	<key>NSAudioCaptureUsageDescription</key>
+	<string>Decibel needs access to control volume levels for individual applications.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Decibel needs microphone access to capture audio from apps using input-capable devices.</string>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>Decibel uses Bluetooth to connect paired audio devices from the menu bar.</string>
+	<key>SUFeedURL</key>
+	<string>https://raw.githubusercontent.com/LorenzoGalaverna/Decibel/main/appcast.xml</string>
+	<!-- TODO: this EdDSA public key belongs to the upstream FineTune project.
+	     Run Sparkle's `generate_keys` and replace it with your own before
+	     publishing a release, otherwise you cannot sign updates. -->
+	<key>SUPublicEDKey</key>
+	<string>xExSoQmCLDCez0KyhZ9EM9PdOZFZgyX/+VF+OVrpIlo=</string>
+	<key>SUEnableInstallerLauncherService</key>
+	<true/>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>decibel</string>
+			</array>
+			<key>CFBundleURLName</key>
+			<string>com.decibelapp.Decibel</string>
+		</dict>
+	</array>
+</dict>
+</plist>
