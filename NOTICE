@@ -1,0 +1,25 @@
+Decibel
+Copyright (C) 2026 Lorenzo Galaverna
+
+This program is a derivative work of FineTune, a macOS audio control app:
+
+    FineTune
+    Copyright (C) 2026 Ronit Singh
+    https://github.com/ronitsingh10/FineTune
+
+FineTune is distributed under the GNU General Public License version 3, and
+Decibel is distributed under the same license. All credit for the original
+design and implementation belongs to the upstream project and its contributors.
+
+Modifications made in Decibel relative to FineTune:
+
+  - Renamed and rebranded throughout, including the bundle identifier
+    (com.finetuneapp.* -> com.decibelapp.*) and the decibel:// URL scheme.
+  - Repointed the Sparkle update feed, repository links and project metadata
+    to github.com/LorenzoGalaverna/Decibel, and generated a new EdDSA key
+    pair for signing updates.
+  - Replaced the release pipeline: builds are ad-hoc signed rather than
+    notarized with an Apple Developer ID, so no paid Apple account is needed.
+  - Removed the upstream project's funding links.
+
+See LICENSE for the full text of the GNU General Public License v3.

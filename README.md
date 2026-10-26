@@ -150,3 +150,5 @@ URL scheme, update feed and project metadata repointed to this repository.
 ## License
 
 [GPL v3](LICENSE) — same license as the original work, as the GPL requires.
+See [NOTICE](NOTICE) for copyright holders and the full list of changes made
+relative to FineTune.
