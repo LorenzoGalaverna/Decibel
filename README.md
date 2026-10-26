@@ -4,9 +4,13 @@
 
 Control the volume of every app independently, boost quiet ones up to 4x, route audio to different speakers, and shape your sound with EQ and headphone correction. Lives in your menu bar. Free and open-source.
 
+<a href="https://github.com/LorenzoGalaverna/Decibel/releases/latest"><img src="assets/download-badge.svg" alt="Download for macOS" height="48"/></a>
+
 <br clear="all"/>
 
 <p align="center">
+  <a href="https://github.com/LorenzoGalaverna/Decibel/releases/latest"><img src="https://img.shields.io/github/v/release/LorenzoGalaverna/Decibel?style=for-the-badge&labelColor=1c1c1e&color=0A84FF&logo=github&logoColor=white" alt="Latest Release"></a>
+  <a href="https://github.com/LorenzoGalaverna/Decibel/releases"><img src="https://img.shields.io/github/downloads/LorenzoGalaverna/Decibel/total?style=for-the-badge&labelColor=1c1c1e&color=3a3a3c" alt="Downloads"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-GPLv3-3a3a3c?style=for-the-badge&labelColor=1c1c1e" alt="License: GPL v3"></a>
   <a href="https://www.apple.com/macos/"><img src="https://img.shields.io/badge/macOS-15%2B-3a3a3c?style=for-the-badge&labelColor=1c1c1e&logo=apple&logoColor=white" alt="macOS 15+"></a>
 </p>
@@ -24,16 +28,34 @@ Control the volume of every app independently, boost quiet ones up to 4x, route 
 
 ## Install
 
-Build from source (requires Xcode 16+ and macOS 15+):
+[**Download the latest release**](https://github.com/LorenzoGalaverna/Decibel/releases/latest) —
+open the `.dmg` and drag Decibel to your Applications folder.
+
+### First launch
+
+Decibel is signed but not notarized by Apple, so the first time you open it macOS
+will say the developer cannot be verified. This is expected. To open it:
+
+- **Right-click** (or Control-click) the app → **Open** → confirm, **or**
+- open **System Settings → Privacy & Security** and click **Open Anyway**
+
+You only need to do this once. Updates install normally after that, and every
+update is cryptographically verified against the project's Sparkle signing key
+before it is applied.
+
+### Build from source
+
+Requires Xcode 16+ and macOS 15+:
 
 ```bash
 git clone https://github.com/LorenzoGalaverna/Decibel.git
 cd Decibel
+./scripts/install-git-filters.sh   # keeps your signing team out of commits
 open Decibel.xcodeproj
 ```
 
-Select the **Decibel** scheme and press ⌘R. Set your own signing team in
-*Signing & Capabilities* on first build.
+Select the **Decibel** scheme and press ⌘R. A free Apple ID is enough to run it
+locally — set it under *Signing & Capabilities*.
 
 ## Quick Start
 

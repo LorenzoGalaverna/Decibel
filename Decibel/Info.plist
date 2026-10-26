@@ -12,11 +12,10 @@
 	<string>Decibel uses Bluetooth to connect paired audio devices from the menu bar.</string>
 	<key>SUFeedURL</key>
 	<string>https://raw.githubusercontent.com/LorenzoGalaverna/Decibel/main/appcast.xml</string>
-	<!-- TODO: this EdDSA public key belongs to the upstream FineTune project.
-	     Run Sparkle's `generate_keys` and replace it with your own before
-	     publishing a release, otherwise you cannot sign updates. -->
+	<!-- EdDSA public key for verifying Sparkle updates. The matching private
+	     key is stored as the SPARKLE_PRIVATE_KEY repository secret. -->
 	<key>SUPublicEDKey</key>
-	<string>xExSoQmCLDCez0KyhZ9EM9PdOZFZgyX/+VF+OVrpIlo=</string>
+	<string>KPVU0hjU+LCxDZGvePb6hgbRX6CBPgyBvg+K9aJXeGQ=</string>
 	<key>SUEnableInstallerLauncherService</key>
 	<true/>
 	<key>CFBundleURLTypes</key>

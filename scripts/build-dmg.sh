@@ -13,25 +13,24 @@ echo "==> Cleaning build directory..."
 rm -rf "$BUILD_DIR"
 mkdir -p "$BUILD_DIR"
 
-echo "==> Building release archive..."
-xcodebuild -project "$PROJECT_DIR/Decibel.xcodeproj" \
+echo "==> Building release app (ad-hoc signed, no Developer ID needed)..."
+xcodebuild build \
+    -project "$PROJECT_DIR/Decibel.xcodeproj" \
     -scheme Decibel \
     -configuration Release \
-    -archivePath "$BUILD_DIR/Decibel.xcarchive" \
-    archive
+    -derivedDataPath "$BUILD_DIR/dd" \
+    CODE_SIGN_IDENTITY="-" \
+    CODE_SIGN_STYLE=Manual \
+    DEVELOPMENT_TEAM="" \
+    PROVISIONING_PROFILE_SPECIFIER=""
 
-echo "==> Exporting notarized app..."
-xcodebuild -exportArchive \
-    -archivePath "$BUILD_DIR/Decibel.xcarchive" \
-    -exportPath "$BUILD_DIR" \
-    -exportOptionsPlist "$PROJECT_DIR/ExportOptions.plist"
+cp -R "$BUILD_DIR/dd/Build/Products/Release/Decibel.app" "$BUILD_DIR/Decibel.app"
 
 echo "==> Creating DMG..."
 # create-dmg auto-generates professional layout with:
 # - App icon composited onto disk icon
 # - "Drag to Applications" layout
-# - Code signing
-npx create-dmg "$BUILD_DIR/Decibel.app" "$BUILD_DIR" --overwrite
+npx --yes create-dmg "$BUILD_DIR/Decibel.app" "$BUILD_DIR" --overwrite
 
 echo "==> Done!"
 echo "DMG created at: $BUILD_DIR/"

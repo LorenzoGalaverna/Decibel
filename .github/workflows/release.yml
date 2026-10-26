@@ -4,6 +4,16 @@ on:
   push:
     tags:
       - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to build (e.g. 1.0.0), for dry runs without a tag'
+        required: true
+
+# No Apple Developer account is used here. The app is ad-hoc signed, so macOS
+# shows an "unidentified developer" warning on first launch; the README explains
+# how users get past it. Updates are still secured by the Sparkle EdDSA
+# signature (SPARKLE_PRIVATE_KEY), which is what Sparkle actually verifies.
 
 jobs:
   build:
@@ -13,7 +23,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup Xcode
         uses: maxim-lobanov/setup-xcode@v1
@@ -23,171 +33,125 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
 
       - name: Install create-dmg dependencies
         run: brew install graphicsmagick imagemagick
 
-      - name: Import signing certificate
-        env:
-          APPLE_CERTIFICATE_BASE64: ${{ secrets.APPLE_CERTIFICATE_BASE64 }}
-          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
-          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+      - name: Resolve version
         run: |
-          KEYCHAIN_PATH="$RUNNER_TEMP/build.keychain"
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            VERSION="${{ github.event.inputs.version }}"
+          else
+            VERSION="${GITHUB_REF_NAME#v}"
+          fi
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "Building version $VERSION (build ${{ github.run_number }})"
 
-          # Decode certificate
-          echo "$APPLE_CERTIFICATE_BASE64" | base64 --decode > $RUNNER_TEMP/certificate.p12
-
-          # Create temporary keychain
-          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
-          security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
-          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
-
-          # Import certificate to keychain
-          security import $RUNNER_TEMP/certificate.p12 \
-            -P "$APPLE_CERTIFICATE_PASSWORD" \
-            -A -t cert -f pkcs12 \
-            -k "$KEYCHAIN_PATH"
-
-          # Allow codesign to access the certificate
-          security set-key-partition-list -S apple-tool:,apple:,codesign: \
-            -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
-
-          # Add keychain to search list (prepend to ensure it's found first)
-          security list-keychain -d user -s "$KEYCHAIN_PATH" $(security list-keychain -d user | tr -d '"')
-
-          # Verify certificate is available
-          security find-identity -v -p codesigning "$KEYCHAIN_PATH"
-
-      - name: Update ExportOptions with Team ID
-        env:
-          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+      - name: Stamp version into project
         run: |
-          sed -i '' "s/TEAM_ID_PLACEHOLDER/$APPLE_TEAM_ID/g" ExportOptions.plist
-          cat ExportOptions.plist
+          sed -i '' "s/MARKETING_VERSION = [^;]*/MARKETING_VERSION = ${VERSION}/g" Decibel.xcodeproj/project.pbxproj
+          sed -i '' "s/CURRENT_PROJECT_VERSION = [^;]*/CURRENT_PROJECT_VERSION = ${{ github.run_number }}/g" Decibel.xcodeproj/project.pbxproj
 
-      - name: Set version from tag
+      - name: Build (Release, ad-hoc signed)
         run: |
-          VERSION=${GITHUB_REF_NAME#v}
-          echo "Setting version to $VERSION"
-
-          # Update MARKETING_VERSION (e.g., 1.1.0)
-          sed -i '' "s/MARKETING_VERSION = [^;]*/MARKETING_VERSION = $VERSION/g" Decibel.xcodeproj/project.pbxproj
-
-          # Update CURRENT_PROJECT_VERSION (build number) using run number for uniqueness
-          BUILD_NUMBER=${{ github.run_number }}
-          sed -i '' "s/CURRENT_PROJECT_VERSION = [^;]*/CURRENT_PROJECT_VERSION = $BUILD_NUMBER/g" Decibel.xcodeproj/project.pbxproj
-
-          echo "Version: $VERSION, Build: $BUILD_NUMBER"
-
-      - name: Build archive
-        env:
-          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-        run: |
-          xcodebuild -project Decibel.xcodeproj \
+          xcodebuild build \
+            -project Decibel.xcodeproj \
             -scheme Decibel \
             -configuration Release \
-            -archivePath build/Decibel.xcarchive \
-            archive \
-            DEVELOPMENT_TEAM="$APPLE_TEAM_ID"
+            -derivedDataPath build/dd \
+            CODE_SIGN_IDENTITY="-" \
+            CODE_SIGN_STYLE=Manual \
+            DEVELOPMENT_TEAM="" \
+            PROVISIONING_PROFILE_SPECIFIER=""
 
-      - name: Export archive
-        run: |
-          xcodebuild -exportArchive \
-            -archivePath build/Decibel.xcarchive \
-            -exportPath build/ \
-            -exportOptionsPlist ExportOptions.plist
+          APP="build/dd/Build/Products/Release/Decibel.app"
+          test -d "$APP" || { echo "::error::Decibel.app not found at $APP"; exit 1; }
+          mkdir -p build && cp -R "$APP" build/Decibel.app
 
-          # Verify the app is signed
-          codesign -dv --verbose=4 build/Decibel.app
+          # Confirm the ad-hoc signature and that entitlements survived
+          codesign -dv --verbose=2 build/Decibel.app
+          codesign -d --entitlements :- build/Decibel.app
 
       - name: Create DMG
         run: |
-          # create-dmg creates a nicely formatted DMG with Applications symlink
-          npx create-dmg build/Decibel.app build/ --overwrite || true
+          npx --yes create-dmg build/Decibel.app build/ --overwrite || true
 
-          DMG_NAME="Decibel.dmg"
+          # create-dmg names the file "Decibel <version>.dmg"; normalise it.
+          if ls build/*.dmg >/dev/null 2>&1; then
+            mv "$(ls build/*.dmg | head -1)" build/Decibel.dmg
+          else
+            echo "create-dmg produced nothing, falling back to hdiutil"
+            rm -rf build/dmg-root
+            mkdir -p build/dmg-root
+            cp -R build/Decibel.app build/dmg-root/
+            ln -s /Applications build/dmg-root/Applications
+            hdiutil create -volname Decibel -srcfolder build/dmg-root \
+              -ov -format UDZO build/Decibel.dmg
+          fi
 
-          # Find and rename the created DMG (create-dmg names it "AppName Version.dmg")
-          mv build/*.dmg "build/${DMG_NAME}"
+          test -f build/Decibel.dmg
+          echo "DMG: $(du -h build/Decibel.dmg | cut -f1)"
 
-          echo "DMG_NAME=${DMG_NAME}" >> $GITHUB_ENV
-          echo "Created: build/${DMG_NAME}"
-
-      - name: Sign DMG
-        env:
-          CERT_IDENTITY: ${{ secrets.CERT_IDENTITY }}
-        run: |
-          # Sign the DMG with Developer ID
-          codesign --force --sign "$CERT_IDENTITY" "build/$DMG_NAME"
-
-          # Verify signature
-          codesign -dv --verbose=2 "build/$DMG_NAME"
-
-      - name: Notarize DMG
-        env:
-          APPLE_ID: ${{ secrets.APPLE_ID }}
-          APPLE_ID_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}
-          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-        run: |
-          # Submit DMG for notarization and wait for result
-          xcrun notarytool submit "build/$DMG_NAME" \
-            --apple-id "$APPLE_ID" \
-            --password "$APPLE_ID_PASSWORD" \
-            --team-id "$APPLE_TEAM_ID" \
-            --wait
-
-          # Staple the notarization ticket to the DMG
-          xcrun stapler staple "build/$DMG_NAME"
-
-          # Verify stapling
-          xcrun stapler validate "build/$DMG_NAME"
-
-      - name: Update appcast with Sparkle
+      - name: Sign appcast with Sparkle EdDSA key
         env:
           SPARKLE_PRIVATE_KEY: ${{ secrets.SPARKLE_PRIVATE_KEY }}
         run: |
-          VERSION=${GITHUB_REF_NAME#v}
+          if [ -z "$SPARKLE_PRIVATE_KEY" ]; then
+            echo "::error::SPARKLE_PRIVATE_KEY secret is not set"; exit 1
+          fi
 
-          # Download Sparkle tools
           SPARKLE_VERSION="2.8.1"
-          curl -L -o sparkle.tar.xz "https://github.com/sparkle-project/Sparkle/releases/download/${SPARKLE_VERSION}/Sparkle-${SPARKLE_VERSION}.tar.xz"
-          mkdir -p sparkle_tools
-          tar -xf sparkle.tar.xz -C sparkle_tools
+          curl -fsSL -o sparkle.tar.xz \
+            "https://github.com/sparkle-project/Sparkle/releases/download/${SPARKLE_VERSION}/Sparkle-${SPARKLE_VERSION}.tar.xz"
+          mkdir -p sparkle_tools && tar -xf sparkle.tar.xz -C sparkle_tools
 
-          # Write private key to temp file (generate_appcast reads from file)
-          echo -n "$SPARKLE_PRIVATE_KEY" > "$RUNNER_TEMP/sparkle_private_key"
+          printf '%s' "$SPARKLE_PRIVATE_KEY" > "$RUNNER_TEMP/sparkle_key"
 
-          # Create Release folder with the DMG (generate_appcast scans this folder)
-          mkdir -p Release
-          cp "build/$DMG_NAME" "Release/"
+          mkdir -p Release && cp build/Decibel.dmg Release/
 
-          # Run generate_appcast to update appcast.xml with proper EdDSA signature
           sparkle_tools/bin/generate_appcast \
-            --ed-key-file "$RUNNER_TEMP/sparkle_private_key" \
+            --ed-key-file "$RUNNER_TEMP/sparkle_key" \
             --download-url-prefix "https://github.com/LorenzoGalaverna/Decibel/releases/download/v${VERSION}/" \
             -o appcast.xml \
             Release/
 
-          # Clean up private key
-          rm -f "$RUNNER_TEMP/sparkle_private_key"
-
-          echo "Updated appcast.xml with version ${VERSION}"
-          cat appcast.xml
+          rm -f "$RUNNER_TEMP/sparkle_key"
+          echo "--- appcast.xml ---"; cat appcast.xml
 
       - name: Commit updated appcast
+        if: github.event_name == 'push'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add appcast.xml
-          git commit -m "Update appcast for ${GITHUB_REF_NAME}" || echo "No changes to commit"
+          git diff --cached --quiet && echo "appcast unchanged" && exit 0
+          git commit -m "Update appcast for v${VERSION}"
           git push origin HEAD:main
 
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v1
+        if: github.event_name == 'push'
+        uses: softprops/action-gh-release@v2
         with:
           files: build/Decibel.dmg
           generate_release_notes: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+          body: |
+            ## Install
+
+            Download `Decibel.dmg`, open it and drag Decibel to Applications.
+
+            Decibel is not notarized by Apple, so on first launch macOS will say
+            the developer cannot be verified. To open it:
+
+            **Right-click the app → Open**, then confirm. Or go to
+            **System Settings → Privacy & Security** and click **Open Anyway**.
+
+            You only need to do this once. Updates after that install normally and
+            are cryptographically verified with the project's Sparkle EdDSA key.
+
+      - name: Upload build artifact (dry runs)
+        if: github.event_name == 'workflow_dispatch'
+        uses: actions/upload-artifact@v4
+        with:
+          name: Decibel-dmg
+          path: build/Decibel.dmg
