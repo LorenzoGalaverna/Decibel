@@ -147,6 +147,13 @@ contributors.
 Changes in this fork: renamed and rebranded to Decibel; bundle identifier,
 URL scheme, update feed and project metadata repointed to this repository.
 
+## Name and icon
+
+The GPL covers the code, not the branding. The name **Decibel** and the app
+icon are original work and are not part of the license grant — fork the code
+freely, but ship it under a different name and icon so users can tell the
+two apart. See [NOTICE](NOTICE).
+
 ## License
 
 [GPL v3](LICENSE) — same license as the original work, as the GPL requires.

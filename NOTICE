@@ -22,4 +22,27 @@ Modifications made in Decibel relative to FineTune:
     notarized with an Apple Developer ID, so no paid Apple account is needed.
   - Removed the upstream project's funding links.
 
+
+NAME AND BRANDING
+-----------------
+
+The GNU GPL covers the *source code* of this program. It does not grant any
+right to use the name of the program or its icon to identify other software.
+
+The name "Decibel" and the Decibel application icon are original works of
+Lorenzo Galaverna, created for this project and not derived from FineTune.
+They are not part of the GPL grant and are reserved:
+
+    decibelIcon.icon/
+    Decibel/Assets.xcassets/decibelIcon.appiconset/
+    assets/icon.png
+
+You are free to fork this project, modify it and redistribute it under the
+GPL. If you do, you must give your version a different name and a different
+icon, so that users are not misled about who produced it and who supports it.
+
+The screenshots under assets/ are still those of the upstream FineTune project
+and remain the copyright of Ronit Singh under the GPL. They are pending
+replacement with screenshots of this build.
+
 See LICENSE for the full text of the GNU General Public License v3.

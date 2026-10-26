@@ -1,0 +1,38 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1024" y2="1024" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#2E9BFF"/>
+      <stop offset="0.55" stop-color="#0A6BFF"/>
+      <stop offset="1" stop-color="#4C2BD4"/>
+    </linearGradient>
+    <linearGradient id="sheen" x1="0" y1="0" x2="0" y2="1024" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.26"/>
+      <stop offset="0.5" stop-color="#FFFFFF" stop-opacity="0.04"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="arc" x1="200" y1="280" x2="824" y2="600" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.95"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0.72"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1024" height="1024" fill="url(#bg)"/>
+  <rect width="1024" height="1024" fill="url(#sheen)"/>
+
+  <!-- VU meter: gauge arc, needle in the safe zone, pivot -->
+  <g transform="translate(512,640)">
+    <!-- scale track, left to right over the top -->
+    <path d="M -325 0 A 325 325 0 0 1 325 0" stroke="url(#arc)" stroke-width="80"
+          stroke-linecap="round" fill="none"/>
+    <!-- hot zone at the top end of the scale -->
+    <path d="M 230 -230 A 325 325 0 0 1 325 0" stroke="#FF4D4D" stroke-width="80"
+          stroke-linecap="round" fill="none"/>
+    <!-- needle, pointing up-right into the healthy part of the scale -->
+    <g transform="rotate(-58)">
+      <path d="M 0 0 L 226 0" stroke="#FFFFFF" stroke-width="56" stroke-linecap="round"/>
+    </g>
+    <!-- pivot -->
+    <circle r="86" fill="#FFFFFF"/>
+    <circle r="35" fill="#0A6BFF"/>
+  </g>
+</svg>
