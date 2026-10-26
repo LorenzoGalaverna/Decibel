@@ -83,6 +83,20 @@ jobs:
           fi
           echo "entitlement check: no get-task-allow"
 
+          # An ad-hoc signed app under the hardened runtime cannot load its own
+          # embedded frameworks unless library validation is disabled: they
+          # share no Team ID. This shipped broken in 1.0.0 and 1.0.1 because the
+          # build and the unit tests both pass without ever launching the
+          # packaged app. Assert the invariant instead.
+          if ls build/Decibel.app/Contents/Frameworks/*.framework >/dev/null 2>&1; then
+            ENTS=$(codesign -d --entitlements :- build/Decibel.app 2>/dev/null)
+            if ! grep -q "disable-library-validation" <<< "$ENTS"; then
+              echo "::error::embedded frameworks present but library validation is on - the app will be killed at launch"
+              exit 1
+            fi
+            echo "framework check: embedded frameworks can be loaded"
+          fi
+
       - name: Create DMG
         run: |
           npx --yes create-dmg build/Decibel.app build/ --overwrite || true
