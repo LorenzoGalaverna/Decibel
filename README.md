@@ -16,10 +16,6 @@ Control the volume of every app independently, boost quiet ones up to 4x, route 
 </p>
 
 <p align="center">
-  <strong>English</strong> · <a href="README.zh-CN.md">简体中文</a>
-</p>
-
-<p align="center">
   <img src="assets/screenshot-main.png" alt="Decibel popup showing per-app volume control, multi-device output routing with picker popover, AutoEQ headphone correction, and device-level volume sliders" width="700">
 </p>
 <p align="center">
