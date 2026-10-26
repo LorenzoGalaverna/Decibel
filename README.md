@@ -33,15 +33,26 @@ open the `.dmg` and drag Decibel to your Applications folder.
 
 ### First launch
 
-Decibel is signed but not notarized by Apple, so the first time you open it macOS
-will say the developer cannot be verified. This is expected. To open it:
+Decibel is not notarized by Apple, so the first time you open it macOS will
+block it and say it cannot verify the developer. This is expected for apps
+distributed outside the App Store. To allow it:
 
-- **Right-click** (or Control-click) the app → **Open** → confirm, **or**
-- open **System Settings → Privacy & Security** and click **Open Anyway**
+1. Open Decibel from your Applications folder. macOS shows the warning —
+   click **Done**.
+2. Go to **System Settings → Privacy & Security**, scroll down to the
+   Security section. You will see *"Decibel was blocked to protect your Mac"*.
+3. Click **Open Anyway**, then confirm with Touch ID or your password.
 
-You only need to do this once. Updates install normally after that, and every
-update is cryptographically verified against the project's Sparkle signing key
-before it is applied.
+You only need to do this once. Decibel then opens normally forever after, and
+updates install without any prompt — each one is cryptographically verified
+against the project's signing key before it is applied.
+
+> On macOS 15 and later, Control-clicking the app and choosing Open no longer
+> works for blocked apps. System Settings is the only route.
+
+Decibel will then ask for **Screen & System Audio Recording** permission,
+which is how macOS exposes per-app audio. Grant it, or the app cannot
+control individual app volumes.
 
 ### Build from source
 

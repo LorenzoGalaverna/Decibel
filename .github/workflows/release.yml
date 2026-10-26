@@ -140,14 +140,18 @@ jobs:
 
             Download `Decibel.dmg`, open it and drag Decibel to Applications.
 
-            Decibel is not notarized by Apple, so on first launch macOS will say
-            the developer cannot be verified. To open it:
+            Decibel is not notarized by Apple, so on first launch macOS blocks it
+            and says it cannot verify the developer. To allow it:
 
-            **Right-click the app → Open**, then confirm. Or go to
-            **System Settings → Privacy & Security** and click **Open Anyway**.
+            1. Open Decibel, then click **Done** on the warning.
+            2. Go to **System Settings → Privacy & Security** and scroll to Security.
+            3. Click **Open Anyway** next to the Decibel message and confirm.
 
-            You only need to do this once. Updates after that install normally and
-            are cryptographically verified with the project's Sparkle EdDSA key.
+            On macOS 15 and later, Control-clicking and choosing Open no longer works
+            for blocked apps — System Settings is the only route.
+
+            You only need to do this once. Updates after that install with no prompt
+            and are cryptographically verified with the project's Sparkle EdDSA key.
 
       - name: Upload build artifact (dry runs)
         if: github.event_name == 'workflow_dispatch'

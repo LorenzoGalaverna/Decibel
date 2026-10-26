@@ -29,16 +29,41 @@
 
 ## 安装
 
-从源码构建（需要 Xcode 16+ 与 macOS 15+）：
+[**下载最新版本**](https://github.com/LorenzoGalaverna/Decibel/releases/latest)，
+打开 `.dmg` 并将 Decibel 拖入「应用程序」文件夹。
+
+### 首次启动
+
+Decibel 未经 Apple 公证，因此首次打开时 macOS 会拦截并提示无法验证开发者。
+这对 App Store 之外分发的应用是正常现象。允许运行的步骤：
+
+1. 从「应用程序」打开 Decibel，在警告框中点击 **完成**。
+2. 打开 **系统设置 → 隐私与安全性**，向下滚动到「安全性」部分，
+   会看到 *"已阻止 Decibel 以保护 Mac"*。
+3. 点击 **仍要打开**，然后用触控 ID 或密码确认。
+
+只需操作一次。之后 Decibel 会正常启动，更新也不再有任何提示 —— 每次更新
+在安装前都会用本项目的签名密钥做加密校验。
+
+> 在 macOS 15 及更高版本中，对被拦截的应用按住 Control 点按再选择「打开」
+> 已不再有效，只能通过系统设置放行。
+
+随后 Decibel 会请求 **屏幕与系统音频录制** 权限，这是 macOS 暴露单个应用
+音频的方式。请授予该权限，否则无法控制各应用的音量。
+
+### 从源码构建
+
+需要 Xcode 16+ 与 macOS 15+：
 
 ```bash
 git clone https://github.com/LorenzoGalaverna/Decibel.git
 cd Decibel
+./scripts/install-git-filters.sh   # 避免把签名团队提交进仓库
 open Decibel.xcodeproj
 ```
 
-选择 **Decibel** scheme 后按 ⌘R 运行。首次构建请在
-*Signing & Capabilities* 中设置你自己的签名团队。
+选择 **Decibel** scheme 后按 ⌘R 运行。本地运行用免费 Apple ID 即可，
+在 *Signing & Capabilities* 中设置。
 
 ## 快速上手
 
