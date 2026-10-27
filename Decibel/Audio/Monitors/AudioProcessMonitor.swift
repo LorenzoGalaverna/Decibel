@@ -100,6 +100,23 @@ final class AudioProcessMonitor: AudioProcessMonitoring {
         return responsiblePID > 0 && responsiblePID != pid ? responsiblePID : nil
     }
 
+    /// Browser profile per process, cached because a process never changes the
+    /// profile it was launched with and `refresh()` runs on every audio change.
+    private var profileDirectoryCache: [pid_t: String?] = [:]
+
+    /// The Chromium `--user-data-dir` backing this process, if any.
+    ///
+    /// Two Chromium instances launched with different profiles are separate
+    /// processes with separate audio services, but report the same bundle
+    /// identifier. Without this they would share one row's worth of saved
+    /// settings and muting one would mute the other.
+    private func browserProfileDirectory(for pid: pid_t) -> String? {
+        if let cached = profileDirectoryCache[pid] { return cached }
+        let directory = BrowserProfile.userDataDirectory(forPID: pid)
+        profileDirectoryCache[pid] = directory
+        return directory
+    }
+
     /// Finds the responsible application for a helper/XPC process.
     /// Uses Apple's responsibility API first, falls back to process tree walking.
     private func findResponsibleApp(
@@ -250,7 +267,8 @@ final class AudioProcessMonitor: AudioProcessMonitoring {
                             name: existing.name,
                             icon: existing.icon,
                             bundleID: existing.bundleID,
-                            isHelperBacked: existing.isHelperBacked || isHelper
+                            isHelperBacked: existing.isHelperBacked || isHelper,
+                            profileDirectory: existing.profileDirectory
                         )
                     }
                 } else {
@@ -260,10 +278,15 @@ final class AudioProcessMonitor: AudioProcessMonitoring {
                         name: name,
                         icon: icon,
                         bundleID: bundleID,
-                        isHelperBacked: isHelper
+                        isHelperBacked: isHelper,
+                        profileDirectory: browserProfileDirectory(for: parentPID)
                     )
                 }
             }
+
+            // Drop cached profiles for processes that are gone, so a recycled
+            // PID is never resolved against the profile of a dead one.
+            profileDirectoryCache = profileDirectoryCache.filter { appsByPID[$0.key] != nil }
 
             // Update per-process listeners
             updateProcessListeners(for: processIDs)

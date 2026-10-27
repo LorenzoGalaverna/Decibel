@@ -156,7 +156,7 @@ final class HUDWindowController: MediaKeyHUDPresenting {
     func showPerAppVolumeHUD(app: AudioApp, sliderFraction: Double) {
         presentPerApp(
             icon: app.icon,
-            title: app.name,
+            title: app.displayName,
             content: .volume(sliderFraction: max(0, min(1, sliderFraction)))
         )
     }
@@ -164,7 +164,7 @@ final class HUDWindowController: MediaKeyHUDPresenting {
     func showPerAppMuteHUD(app: AudioApp, isMuted: Bool) {
         presentPerApp(
             icon: app.icon,
-            title: app.name,
+            title: app.displayName,
             content: .mute(isMuted: isMuted)
         )
     }

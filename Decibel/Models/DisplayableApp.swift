@@ -40,7 +40,7 @@ enum DisplayableApp: Identifiable {
     var displayName: String {
         switch self {
         case .active(let app):
-            return app.name
+            return app.displayName
         case .pinnedInactive(let info):
             return info.displayName
         }

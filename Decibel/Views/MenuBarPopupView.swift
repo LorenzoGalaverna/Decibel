@@ -779,7 +779,7 @@ struct MenuBarPopupView: View {
                     case .active(let app):
                         AppEditRow(
                             icon: app.icon,
-                            name: app.name,
+                            name: app.displayName,
                             isIgnored: false,
                             isPinned: audioEngine.isPinned(app),
                             onToggleVisibility: { audioEngine.ignoreApp(app) },

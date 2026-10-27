@@ -120,7 +120,7 @@ struct AppRow: View {
                         .opacity(isIconHovered ? 0.7 : 1.0)
                 }
                 .buttonStyle(.plain)
-                .accessibilityLabel("Open \(app.name)")
+                .accessibilityLabel("Open \(app.displayName)")
                 .onHover { hovering in
                     isIconHovered = hovering
                     if hovering {
@@ -134,10 +134,10 @@ struct AppRow: View {
                 // system default; the same VStack-with-subtitle pattern as device
                 // rows' AutoEQ subtitle).
                 VStack(alignment: .leading, spacing: 1) {
-                    Text(app.name)
+                    Text(app.displayName)
                         .font(DesignTokens.Typography.rowName)
                         .lineLimit(1)
-                        .help(app.name)
+                        .help(app.displayName)
 
                     if let subtitle = DevicePicker.routingSubtitle(
                         devices: devices,
