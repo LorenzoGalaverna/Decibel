@@ -28,6 +28,14 @@
     </item>
     -->
         <item>
+            <title>1.0.4</title>
+            <pubDate>Tue, 27 Oct 2026 01:05:02 +0000</pubDate>
+            <sparkle:version>8</sparkle:version>
+            <sparkle:shortVersionString>1.0.4</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>15.4</sparkle:minimumSystemVersion>
+            <enclosure url="https://github.com/LorenzoGalaverna/Decibel/releases/download/v1.0.4/Decibel.dmg" length="5449970" type="application/octet-stream" sparkle:edSignature="fcEIOqauop/3jYiSTV1qEsUWFJirESQUUDY3cj/Ne6GLQ+yiDZeFqLYLJpnLj3oV/GfwM6r4+wvK12s6IWQtAA=="/>
+        </item>
+        <item>
             <title>1.0.3</title>
             <pubDate>Tue, 27 Oct 2026 00:15:13 +0000</pubDate>
             <sparkle:version>7</sparkle:version>
