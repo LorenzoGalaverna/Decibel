@@ -749,20 +749,33 @@ struct MenuBarPopupView: View {
                     .font(DesignTokens.Typography.caption)
                     .foregroundStyle(DesignTokens.Colors.textTertiary)
             }
-            // A browser mixes all of its tabs into one audio stream, so the only
-            // way to give two pages separate volume is a second browser instance
-            // with its own profile. This opens one.
+            // A browser mixes every tab and window into one audio stream before
+            // macOS sees it, so tabs can never get separate sliders. A browser
+            // instance started on its own profile does get one. The browser's
+            // own menus cannot start one, so this offers it. Profiles are read
+            // inside the menu's content, which SwiftUI builds only on open.
             if BrowserChannels.isAvailable && !isEditingDevicePriority {
-                Button {
-                    BrowserChannels.openChannel()
+                Menu {
+                    let profiles = BrowserChannels.availableProfiles()
+                    if profiles.isEmpty {
+                        Text("No browser profiles found")
+                    } else {
+                        ForEach(profiles) { profile in
+                            Button(profile.menuTitle) {
+                                BrowserChannels.openChannel(for: profile)
+                            }
+                        }
+                    }
                 } label: {
                     Image(systemName: "macwindow.badge.plus")
                         .font(.system(size: 11))
                         .foregroundStyle(DesignTokens.Colors.textTertiary)
                 }
-                .buttonStyle(.plain)
-                .help("New browser window with its own volume control")
-                .accessibilityLabel("New browser window with its own volume control")
+                .menuStyle(.borderlessButton)
+                .menuIndicator(.hidden)
+                .fixedSize()
+                .help("Open a browser window that has its own volume slider")
+                .accessibilityLabel("Open a browser window with its own volume slider")
             }
         }
         .padding(.bottom, DesignTokens.Spacing.xs)
