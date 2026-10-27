@@ -749,6 +749,21 @@ struct MenuBarPopupView: View {
                     .font(DesignTokens.Typography.caption)
                     .foregroundStyle(DesignTokens.Colors.textTertiary)
             }
+            // A browser mixes all of its tabs into one audio stream, so the only
+            // way to give two pages separate volume is a second browser instance
+            // with its own profile. This opens one.
+            if BrowserChannels.isAvailable && !isEditingDevicePriority {
+                Button {
+                    BrowserChannels.openChannel()
+                } label: {
+                    Image(systemName: "macwindow.badge.plus")
+                        .font(.system(size: 11))
+                        .foregroundStyle(DesignTokens.Colors.textTertiary)
+                }
+                .buttonStyle(.plain)
+                .help("New browser window with its own volume control")
+                .accessibilityLabel("New browser window with its own volume control")
+            }
         }
         .padding(.bottom, DesignTokens.Spacing.xs)
 
